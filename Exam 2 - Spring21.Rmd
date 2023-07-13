@@ -1,0 +1,299 @@
+---
+title: "Data Analytics in CJ - Exam 2"
+author: "Amari Swain"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(MatchIt)
+library(dplyr)
+set.seed(12142019)
+load(file='exam2.RData')
+```
+
+
+**Instructions**: This exam must be submitted in knitted (.doc or .html) form. Raw markdown (.rmd) files will not be accepted. Be sure to read all questions carefully and answer **all** parts of each question. The data set for these questions will be made available through Canvas in the same folder location as the .rmd and .pdf files for this exam. All questions will require **both** programming and statistical interpretations.
+
+In prior assignments you have considered the relationship between gang membership and delinquency. In a new set of problems for this exam, you will examine the influence of youth incarceration on later delinquent behavior. The *incarc* variable is a dummy variable equal to 1 if the youth was incarcerated at any time from 1998 to 2000 and 0 otherwise (please see the final page of the exam sheet for descriptions of each variable). You will first need to estimate multivariate regression models predicting delinquent behavior then will proceed to use propensity score analysis. Finally, you will be tasked with comparing the obtained estimates from the different methods and assessing why causal estimates may differ between these types of analyses (the Sweeten and Apel (2007) reading will be especially helpful here). 
+
+I have set the r setup code chunk for this exam to load the required packages and set the seed for the propensity score anslysis. Please be sure to leave the r setup code chunk intact, otherwise your estimates may differ from the answer key. The onyl situation where the setup file would need to be changed is if you must use the .RDS version of the data set for the exam. In which case, you should only change the load(file='exam2.RData') line. 
+
+\newpage
+
+**Question #1**: [**25 points**] For this question, you will need to create several variables for use in later questions in this exam. Unless otherwise specified, you should provide summary statistics and interpret the mean, median, and range for each newly created variable. You should also comment on the normality (i.e., of the distribution of values) of each new variable. 
+
+A) (*6 points*) Create a variable called *subuse97* that is the total of four other variables - *cocaine97*, *drinkalc97*, *marijuana97*, and *smoke97*. Do the same for the 2001 (e.g., *cocaine01*, etc...) versions of each variable, and call the new variable *subuse01*.
+
+``` {r subuse97, echo=TRUE}
+exam2<-exam2 %>%
+
+mutate(subuse97=(cocaine97 + drinkalc97 + marijuana97 + smoke97))
+
+summary(exam2$subuse97)
+```
+
+``` {r subuse01, echo=TRUE}
+exam2<-exam2 %>%
+
+mutate(subuse01=(cocaine01 + drinkalc01 + marijuana01 + smoke01 ))
+
+summary(exam2$subuse01)
+```
+
+##Interepration 
+For the variable "subuse97" the mean of 1.014 represents the average. Its also has a median of 1, a 3rd Qu. of 2, and a max of 3. The difference in the highest and lowest value is 3 because the min 0 and the max is 3.For the variable "subuse01" the mean of 1.238 represents the average. Its also has a median of 1, a 3rd Qu. of 2, and a max of 4. The difference in the highest and lowest value is 4 because the min 0 and the max is 4.
+
+
+B) (*7 points*) Create a variable called *bad_peers* that is the total of the following variables - *peers_cutclass*, *peers_drunk*, *peers_drugs*, *peers_gang*, and *peers_smoke*. Create another variable called *good_peers* that is the total of the following variables - *peers_church*, *peers_college*, *peers_sports*, and *peers_volunteer*. 
+
+
+``` {r bad_peers, echo=TRUE}
+exam2<-exam2 %>%
+
+mutate(bad_peers=(peers_cutclass + peers_drunk + peers_drugs + peers_gang + peers_smoke))
+
+summary(exam2$bad_peers)
+
+```
+
+``` {r good_peers, echo=TRUE}
+exam2<-exam2 %>%
+
+mutate(good_peers=(peers_church + peers_college + peers_sports + peers_volunteer))
+
+summary(exam2$good_peers) 
+```
+
+##Interepration 
+For the variable "bad_peers" the mean of 10.85 represents the average of bad peers. Its also has a median of 10, a 3rd Qu. of 14, and a max of 25. The difference in the highest and lowest value is 25 because the min 0 and the max is 25. For the variable "good_peers" the mean of 11.96 represents the average of good peers. Its also has a median of 12, a 3rd Qu. of 14, and a max of 20. The difference in the highest and lowest value is 20 because the min 0 and the max is 20.
+
+C) (*5 points*) Create squared versions for each of the following variables: *age97*, *arr97*, *crime97*, and *varscore97*. You do not need to interpret these new variables and the name of each new variable should be suffixed with '_squared'. 
+
+
+``` {r squared, echo=TRUE}
+exam2<-exam2 %>%
+mutate(age97_squared=(age97^2))
+summary(exam2$age97_squared)
+  
+exam2<-exam2 %>%
+mutate(arr97_squared=(arr97^2))
+summary(exam2$arr97_squared)
+
+exam2<-exam2 %>%
+mutate(crime97_squared=(crime97^2))
+summary(exam2$crime97_squared)
+    
+exam2<-exam2 %>%
+mutate(varscore97_squared=(varscore97^2))
+summary(exam2$varsocre97_squared)
+  
+```
+
+D) (*7 points*) Create logged versions for each of the following variables: *arr01*, *crime01*, *grhhinc97*, and *varscore01*. Remember that the log of 0 is undefined. These new variable names should be suffixed with '_logged'. 
+
+``` {r logged, echo=TRUE}
+exam2$arr01_logged <- log(exam2$arr01+1)
+summary(exam2$arr01_logged)
+  
+exam2$crime01_logged <- log(exam2$crime01+1)
+summary(exam2$crime01_logged)
+
+exam2$grhhinc97_logged <- log(exam2$grhhinc97+1)
+summary(exam2$grhhinc97_logged)
+
+exam2$varscore01_logged <- log(exam2$varscore01+1)
+summary(exam2$varscore01_logged)
+  
+```
+
+\newpage
+
+**Question #2**: [**30 points**] For this question you will need to estimate a series of multivariate regressions and to evaluate whether the assumptions of regression are violated in each case. You will need to interpret the intercept, estimate for the primary treatment variable - *incarc*, and the R-squared value for each regression. You **do not need** to interpret any slope estimates other than those specified in these instructions! 
+
+A) (*5 points*) Estimate a linear (multivariate) regression model predicting *subuse01* using the following variables: *age97*, *age97_squared*, *arr97*, *arr97_squared*, *bad_peers*, *belgang97*, *crime97*, *crime97_squared*, *good_peers*, *grhhinc97_logged*, *incarc*, *male*, *race*, *region*, *subuse97*, *urban*, and *vicgang97*. Provide a summary of this regression model and interpret the necessary coefficients as directed above.  
+
+```{r lmsubuse01, echo=TRUE}
+subuse01_reg <- lm(subuse01 ~ age97 + age97_squared + arr97 + arr97_squared + bad_peers + belgang97 + crime97 + crime97_squared + good_peers + grhhinc97_logged + incarc + male + race + region + subuse97 + urban + vicgang97, data = exam2)
+
+summary(subuse01_reg)
+
+```
+
+B) (*5 points*) Estimate a linear (multivariate) regression model predicting *arr01_logged* using the following variables: *age97*, *age97_squared*, *arr97*, *arr97_squared*, *bad_peers*, *belgang97*, *crime97*, *crime97_squared*, *good_peers*, *grhhinc97_logged*, *incarc*, *male*, *race*, *region*, *subuse97*, *urban*, and *vicgang97*. Provide a summary of this regression model and interpret the necessary coefficients as directed above.
+
+```{r lmarr01_logged, echo=TRUE}
+arr01_logged_reg <- lm(arr01_logged ~ age97 + age97_squared + arr97 + arr97_squared + bad_peers + belgang97 + crime97 + crime97_squared + good_peers + grhhinc97_logged + incarc + male + race + region + subuse97 + urban + vicgang97, data = exam2)
+
+summary(arr01_logged_reg)
+
+```
+
+
+C) (*5 points*) Estimate a linear (multivariate) regression model predicting *crime01_logged* using the following variables: *age97*, *age97_squared*, *arr97*, *arr97_squared*, *bad_peers*, *belgang97*, *crime97*, *crime97_squared*, *good_peers*, *grhhinc97_logged*, *incarc*, *male*, *race*, *region*, *subuse97*, *urban*, and *vicgang97*. Provide a summary of this regression model and interpret the necessary coefficients as directed above.
+
+```{r lmcrime01logged, echo=TRUE}
+crime01_logged_reg <- lm(crime01_logged~ age97 + age97_squared + arr97 + arr97_squared + bad_peers + belgang97 + crime97 + crime97_squared + good_peers + grhhinc97_logged + incarc + male + race + region + subuse97 + urban + vicgang97, data = exam2)
+
+summary(crime01_logged_reg)
+
+```
+
+D) (*5 points*) Estimate a linear (multivariate) regression model predicting *varscore01_logged* using the following variables: *age97*, *age97_squared*, *arr97*, *arr97_squared*, *bad_peers*, *belgang97*, *crime97*, *crime97_squared*, *good_peers*, *grhhinc97_logged*, *incarc*, *male*, *race*, *region*, *subuse97*, *urban*, and *vicgang97*. Provide a summary of this regression model and interpret the necessary coefficients as directed above.
+
+```{r lmvarscore01logged, echo=TRUE}
+varscore01_logged_reg <- lm(varscore01_logged~ age97 + age97_squared + arr97 + arr97_squared + bad_peers + belgang97 + crime97 + crime97_squared + good_peers + grhhinc97_logged + incarc + male + race + region + subuse97 + urban + vicgang97, data = exam2)
+
+summary(varscore01_logged_reg)
+
+```
+
+E) (*10 points*) Evaluate the errors from each of these models. You should produce appropriate graphs that demonstrate whether the errors are 1) normally distributed and, 2) homoskedastic or heteroskedastic. Provide an interpretation of the distribution of the errors for each of the regressions estimated for this question. **Note** - the geom_abline() function will not work properly for the logged outcomes so you can exclude this additional line for those graphs. 
+
+``` {r subuse01_reg errors, echo=TRUE}
+##Subuse01
+ggplot(subuse01_reg,aes(x=exam2$subuse01, y = subuse01_reg$residuals)) + geom_point() + geom_abline(xintercept=0, color="blue")
+
+ggplot(subuse01_reg, aes(x=subuse01_reg$residuals, y=subuse01_reg$fitted.values)) + geom_point() +
+geom_smooth(method = 'lm', color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+##Arr01
+ggplot(arr01_logged_reg,aes(x=exam2$arr01_logged, y = arr01_logged_reg$residuals)) + geom_point() + geom_vline(xintercept=0, color="blue")
+
+ggplot(arr01_logged_reg, aes(x=arr01_logged_reg$residuals, y=arr01_logged_reg$fitted.values)) + geom_point() +
+geom_smooth(method = 'lm', color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+##Crime01
+ggplot(crime01_logged_reg,aes(x=exam2$crime01_logged, y = crime01_logged_reg$residuals)) + geom_point() + geom_vline(xintercept=0, color="blue")
+
+ggplot(crime01_logged_reg, aes(x=crime01_logged_reg$residuals, y=crime01_logged_reg$fitted.values)) + geom_point() +
+geom_smooth(method = 'lm', color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+##Varscore01
+ggplot(varscore01_logged_reg,aes(x=exam2$varscore01_logged, y = varscore01_logged_reg$residuals)) + geom_point() + geom_vline(xintercept=0, color="blue")
+
+ggplot(varscore01_logged_reg, aes(x=varscore01_logged_reg$residuals, y=varscore01_logged_reg$fitted.values)) + geom_point() +
+geom_smooth(method = 'lm', color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+```
+
+\newpage
+
+**Question #3**: [**20 points**] For this question you will need to estimate a series of propensity score matching algorithms using the *incarc* treatment variable. For each model you should interpret the differences in mean values of the matching covariates across the treated (i.e., *incarc*=1) and untreated (i.e., *incarc*=0) cases. 
+
+A) (*7 points*) Estimate a propensity score algorithm, using a caliper of .10, predicting the *incarc* variable and using the following variables as matching covariates: *age97*, *age97_squared*, *arr97*, *arr97_squared*, *bad_peers*, *belgang97*, *crime97*, *crime97_squared*, *good_peers*, *grhhinc97_logged*, *male*, *race*, *region*, *subuse97*, *urban*, and *vicgang97*. Provide a summary of this propensity score matching model. 
+
+``` {r match3a10, echo = TRUE}
+match3a10 <- matchit(incarc~ age97 + age97_squared + arr97 + arr97_squared + bad_peers + belgang97 + crime97 + crime97_squared + good_peers + grhhinc97_logged + male + race + region + subuse97 + urban + vicgang97, data = exam2, method = "nearest", distance = "logit", caliper = .10, discard = "both")
+summary(match3a10)
+
+```
+
+B) (*7 points*) Estimate a propensity score algorithm, using a caliper of .01, predicting the *incarc* variable and using the following variables as matching covariates: *age97*, *age97_squared*, *arr97*, *arr97_squared*, *bad_peers*, *belgang97*, *crime97*, *crime97_squared*, *good_peers*, *grhhinc97_logged*, *male*, *race*, *region*, *subuse97*, *urban*, and *vicgang97*. Provide a summary of this propensity score matching model.
+
+``` {r match3a01, echo = TRUE}
+match3a01 <- matchit(incarc~ age97 + age97_squared + arr97 + arr97_squared + bad_peers + belgang97 + crime97 + crime97_squared + good_peers + grhhinc97_logged + male + race + region + subuse97 + urban + vicgang97, data = exam2, method = "nearest", distance = "logit", caliper = .01, discard = "both")
+summary(match3a01)
+
+```
+
+C) (*6 points*) Evaluate covariate balance and common support (using appropriate data visualizations) for both propensity score models and provide an interpretation of the results (i.e., is there still evidence of covariate imbalance after matching? Is there evidence of a lack of common support?). Be sure to fully explain your interpretations.
+
+
+``` {r covariate match10 match01, echo=TRUE}
+covariatebal_plot_match3a10<-plot(match3a10)
+summary(covariatebal_plot_match3a10)
+
+common_supp_match3a10 <- plot(match3a10, type = "hist")
+summary(common_supp_match3a10)
+
+##Match01
+covariatebal_plot_match3a01<-plot(match3a01)
+summary(covariatebal_plot_match3a01)
+
+common_supp_match3a10 <- plot(match3a10, type = "hist")
+summary(common_supp_match3a10)
+
+
+```
+
+###Interpretation
+The covariate balancing for "matched3a10" seems be successful because when looking at the matched graphs less of the points fall outside of the balancing line vs in the all graphs more points fall outside of it. 
+The common support also seems successful because when looking at the histograms the the raw treated and control dont look similar. But when you look at the matched control and treated they are practically the same, so it leads me to the conclusion that it was successful.
+For "matched3a01", it seems that we can come to the same conclusion because when looking at the matched graphs less of the points fall outside of the balancing line vs in the all graphs more points fall outside of it.
+
+\newpage
+
+**Question #4**: [**30 points**] For this question you will need to estimate and compare the treatment effect estimates from the linear models and propensity score matching models. Finally, using the readings from this class to support your answer, you will need to provide an explanation for why these results may differ.
+
+A) (*10 points*) Using the propensity score models you have just created, estimate treatment effects for the following outcome variables - *arr1_logged*, *crime01_logged*, *subuse01*, and *varscore01_logged* (there should be eight total treatment effect estimates, one for each outcome and for each propensity score model). To be clear - the treatent variable is *incarc*. Provide interpretations for each treatment effect estimate. Note that you will first need to create matched data sets for each of the propensity scores.
+
+``` {r match4A10, echo = TRUE}
+##Match01 Capiler .10
+match4a10<- matchit(incarc~ arr01_logged + crime01_logged + subuse01 + varscore01_logged, data = exam2, method = "nearest", distance = "logit", caliper = .10, discard = "both")
+
+matched4a_10 <- match.data(match4a10)
+
+summary(matched4a_10)
+
+##Match01 Capiler .01
+match4a01<- matchit(incarc~ arr01_logged + crime01_logged + subuse01 + varscore01_logged, data = exam2, method = "nearest", distance = "logit", caliper = .01, discard = "both")
+
+matched4a_01 <- match.data(match4a01)
+
+summary(matched4a_01)
+
+##matched .10 variables
+with(matched4a_10, t.test(arr01_logged~incarc))
+with(matched4a_10, t.test(crime01_logged~incarc))
+with(matched4a_10, t.test(subuse01~incarc))
+with(matched4a_10, t.test(varscore01_logged~incarc))
+
+###matched .01 variables
+with(matched4a_01, t.test(arr01_logged~incarc))
+with(matched4a_01, t.test(crime01_logged~incarc))
+with(matched4a_01, t.test(subuse01~incarc))
+with(matched4a_01, t.test(varscore01_logged~incarc))
+```
+
+
+
+
+B) (*10 points*) Compare your estimates from the propensity score models and the linear models for the *incarc* treatment variable (the treatment effect for the multivariate regression models is simply the coefficient for the *incarc* variable). In which analysis does the impact of incarceration seem strongest? Weakest? Is there a difference in the estimates between the propensity score models of different calipers? Be sure to fully explain each answer.
+
+##Intereprataion 
+The analysis that i think has the stongest impact on incarceration is Crime01_logged, i came to this by seeing which had the greatest difference once that variable is factored and that would be crime01_logged with .07. The weakest would be subuse 01, i came to this by taking the differences in gruop means. The subuse01 gave -.05 difference once the variable is factored in. The reason we see a difference in propensity score models is based off the caliper we used. For instances we used 4 with a very conservative .01 caliper which is way more strict on the margin of error vs the other 4 where we used a .10. With a .01 we reduce the sample size significantly because we now have a margin of error in place that discards individuals that dont fall under this .01 caliper.
+
+C) (*10 points*) Finally, discuss the relative advantages of the propensity score models over the linear models and explain why (using course readings as support) you might expect treatment estimates from a propensity score matching procedure to differ from those obtained in a multivariate regression model.
+
+
+##Interpretation 
+When looking at propensity score models it shows the exact break down for each variable given in relation to the independent variable tested against it. For linear models we do the same but it is displayed in a graph manner. The propensity model has far more advantages because instead of a plan visual representation of all variables in one it gives you a complete breakdown of all the numbers. This could be valued more because a graph is good at showing but the propensity model shows you all that with the numbers you may be looking for to see an indepth look at how each variable effects the independent variable you are testing against.
+\newpage
+
+**Variable Descriptions**
+
+1) age97 - Age at the 1997 interview (in years)
+2) arr97/arr01 - Number or prior arrests reported in the prior year or since the date of the last interview
+3) belgang97 - Dummy variable equal to 1 if youth reports being a gang member at 1997 interview
+4) cocaine97/cocaine01 - Dummy variable equal to 1 if youth reports using cocaine in the last year or since the last interview
+5) crime97/crime01 - Number of self-reported crimes in the last year or since the date of the last interview
+6) drinkalc97/drinkalc01 - Dummy variable equal to 1 if youth reports drinking alcohol in the last year or since the last interview
+7) grhhinc97 - Gross household income for youth's household in the last year
+8) incarc - Dummy variable equal to 1 if the youth is incarcerated between the 1997 and 2001 interviews
+9) male - Dummy variable equal to 1 if youth is male
+10) marijuana97/marijuana01 - Dummy variable equal to 1 if youth reports using marijuana in the last year or since the last interview
+11) peers_church - Ordinal variable indicating how many of a youth's peers attend church regularly from 1 "None of them" to 5 "All of them"
+12) peers_sports - Ordinal variable indicating how many of a youth's peers play afterschool sports from 1 "None of them" to 5 "All of them"
+13) peers_college - Ordinal variable indicating how many of a youth's peers intend to go to college from 1 "None of them" to 5 "All of them"
+14) peers_cutclass - Ordinal variable indicating how many of a youth's peers cut classes from 1 "None of them" to 5 "All of them"
+15) peers_drunk - Ordinal variable indicating how many of a youth's peers frequently get drunk from 1 "None of them" to 5 "All of them"
+16) peers_drugs - Ordinal variable indicating how many of a youth's peers use drugs regularly from 1 "None of them" to 5 "All of them"
+17) peers_gang - Ordinal variable indicating how many of a youth's peers are gang members from 1 "None of them" to 5 "All of them"
+18) peers_smoke - Ordinal variable indicating how many of a youth's peers smoke regularly from 1 "None of them" to 5 "All of them"
+19) peers_volunteer - Ordinal variable indicating how many of a youth's peers volunteer their time to charities or community organizations from 1 "None of them" to 5 "All of them"
+20) race - A four category indicator of a youth's race
+21) region - A four category indicator for the region a youth lives
+22) smoke97/smoke01 - Dummy variable equal to 1 if the youth reports smoking cigarettes in the past year or since the last interview
+23) urban - Dummy variable equal to 1 if the youth lives in an urban area
+24) varscore97/varscore01 - Variety score variable indicating the total types of delinquent activities the youth reported engaging in within the past year or since the date of the last interview. 

@@ -1,0 +1,118 @@
+---
+title: 'Exam 1'
+author: 'Amari Swain'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Instructions
+
+For the following questions you will need to draw heavily upon the R programming and probability lectures. To submit this assignment, you will need to upload both a knitted HTML or Word document along with the original markdown file you use to create the document. The assignment is worth a total of 126 points. Please make sure you show all of your work and be sure to label your answers appropriately (so that I know which part of the question you are providing an answer to)!
+
+### Question #1
+
+**28 points**
+
+A. [*8 points*] Using the appropriate import function in R, import the "Lethal Interventions 1980 - 2000" .csv or .xlsx file into RStudio as a data frame with the name lethal_interventions. Be sure to use a code chunk to do so.
+
+##Answer
+``` {r import, echo=TRUE}
+library(readxl)
+lethal_interventions <- read_excel("Lethal Interventions 1980-2000.xlsx")
+summary(lethal_interventions)
+
+```
+
+B. [*10 points*] Summarize the data frame. Provide an interpretation of the mean, median, standard deviation, and range for the following variables - *vcrimrt* (the violent crime rate) and *lethint* (the number of lethal interventions).
+
+#Answer
+``` {r vicrimrt lethint, echo=TRUE}
+summary(lethal_interventions)
+summary(lethal_interventions$vcrimrt)
+summary(lethal_interventions$lethint)
+
+```
+###Interpretation
+When looking at these variables "vcrimrt" we can see the mean of this variable is 521.5, the median is 475.9, the range is 80 to 1090.7 i can see this by looking at the min and max. When we see mean it refers to the the average in the violent crime rate, the median would represent the middle of the data, and range would represent the where all the data falls between. For the variable "lethint" the mean is 60.30, the median is 35.00, and the range is 3.00 to 669.00.
+
+
+C. [*10 points*] Create a variable called *recode_vcrimrt* that is a categorical variable based upon values of the *vcrimrt* variable. The values of the new variable should range from 1 to 4. Values of 1 ("Low") should be assigned to violent crime rate values between 0 and 299, values of 2 ("Med-Low") should be assigned to rates between 300 and 549, values of 3 ("Med-High") should be assigned to rates between 550 and 799, and values of 4 ("High") should be assigned to rates 800 and above. This can be accomplished with one line of code or several - you will need to use the **ifelse()** function in all commands, though. Be sure to create this new variable **within** the existing data frame. Finally, provide a summary of this new variable. **Note** - the text labels (i.e., "Low", "Med-Low", etc...) above should not be the values you assign - I provide them as context for a following question. 
+
+As a hint, I will note that you can create **nested** ifelse() statements in R. Recall in a prior assignment that you had to assign one of two values to a variable depending upon the test in the ifelse() function - 1 if some condition was true and 0 otherwise. To **nest** another ifelse() function within that, I can tell R to run another ifelse() test if the first test evaluates as false, like so:
+
+The ... is there because I am not going to provide the whole answer for you - you have to figure out the rest yourselves. Pay close attention to balancing the number of open and close parentheses - the function will not work if they are not balanced.  
+
+#Answer
+``` {r table_lethint_abavg, echo=TRUE}
+with(lethal_interventions, table(lethint_abavg, recode_vcrimrt))
+
+```
+
+C. [*10 points*] Using the frequency table from 2B, manually compute (in a separate code chunk or inline code) the unconditional probability of being above the mean on lethal interventions and the unconditional probability of having Med-High **or** High violent crime rate (note - you should compute two separate unconditional probabilities here). Provide an interpretation for each value. 
+
+#Answer
+When looking at the table the proportion that is above the national mean for lethal interventions is $\frac{17}{50} = `r format(17/50, scientific=FALSE)`$ . This means there is a probability of .34 or 34% chance of a state being above the national mean.
+
+When looking at the table the proportion that has a Med-High or High violent crime rate is $\frac{22}{50} = `r format(22/50, scientific=FALSE)`$ . This means there is a probability of .44 or 44% chance of a state falling in the Med-High or High crime rates.
+
+### Question #3
+
+**26 points**
+
+A. [*8 points*] In a new code chunk or inline code (your choice) and using the same frequency table, compute the conditional probability of having a **higher** than average number of lethal interventions given that a state has a High violent crime rate. Interpret this value below the code chunk.
+
+#Answer
+The probability of having a state that falls above the national mean given that that state has a High crime rate would be $\frac{6}{8} = `r format(6/8, scientific=FALSE)`$ . Meaning that there is a .75 probability of a state being above the average given that it has a high Crime rate. 
+
+B. [*8 points*] In a new code chunk or inline code (your choice) and using the same frequency table, compute the conditional probability of having a **higher** than average number of lethal interventions given that a state has a Med-Low violent crime rate. Interpret this value below the code chunk.
+
+#Answer
+The probability of having a state that falls above the national mean given that that state has a Med-low crime rate would be $\frac{5}{17} = `r format(5/17, scientific=FALSE)`$ . Meaning that there is a .29 probability of a state being above the average given that it has a Med-low crime rate. 
+
+C. [*10 points*] In a new code chunk or inline code (your choice), compute the percentage difference between the proportions you identified in Parts A and B, using the value in Part B as the baseline value. Interpret this value below this new code chunk or inline code.
+
+#Answer
+
+ $(((\frac{6}{8})-(\frac{5}{17}))/(\frac{5}{17})) * {100} = `r format(((6/8) - (5/17))/.43)*100, scientific=FALSE)`$
+
+### Question #4
+
+**26 points** 
+
+A. [*8 points*] In a new code chunk or inline code (your choice) and using the same frequency table, compute the conditional probability of having a **lower** than average number of lethal interventions given that a state has a High violent crime rate. Interpret this value below the code chunk or inline code.
+
+#Answer
+The probability of having a state that falls below the national mean given that that state has a High crime rate would be $\frac{2}{8} = `r format(2/8, scientific=FALSE)`$ . Meaning that there is a .25 probability of a state being below the average given that it has a High Crime rate. 
+
+B. [*8 points*] In a new code chunk or inline code (your choice) and using the same frequency table, compute the conditional probability of having a **lower** than average number of lethal interventions given that a state has a Med-Low violent crime rate. Interpret this value below the code chunk or inline code.
+
+#Answer
+The probability of having a state that falls below the national mean given that that state has a Med-High crime rate would be $\frac{8}{14} = `r format(8/14, scientific=FALSE)`$ . Meaning that there is a .57 probability of a state being below the average given that it has a Med-High crime rate. 
+
+C. [*10 points*] In a new code chunk or inline code (your choice), compute the percentage difference between the proportions you identified in Parts A and B, using the value in Part B as the baseline value. Interpret this value below this new code chunk or inline code.
+
+#Answer
+
+ $(({.25}-{.57})/{.57}) * {100} = `r format(((.25 - .57)/.57)*100, scientific=FALSE)`$
+
+### Question #5
+
+**20 points**
+
+A. [*20 points*] Given the evidence you have observed above, provide a 5-7 sentence statement on what you believe is the relationship between lethal interventions and the violent crime rate. Be sure to use the results from the above questions to support your argument.
+
+#Answer
+
+
+
+\newpage
+
+## Variable Descriptions
+
+1. stcode: Two character state abbreviation
+2. lethint: Count of lethal interventions by police officers from 1980 to 2000
+3. vcrimrt: Average violent crime rate for 1980 to 2000
+4. poptotal: Average total population for each state from 1980 to 2000
