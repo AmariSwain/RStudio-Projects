@@ -1,0 +1,225 @@
+---
+title: "Homework Assignment #5"
+author: "Amari Swain"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(MatchIt)
+set.seed(04272020)
+load(file='NLSY97_HW5.RData')
+```
+
+**Directions**: You must answer the following questions in an RMarkdown document and provide to me, by the date and time listed above, 1) the output from the markdown script (Word Document or HTML) and 2) the script you use to create that output (a .rmd file). I recommend you write your answers to these questions within the RMarkdown file I provide to you and simply rename it to include your last name in the script file name and change the output type to a Word document or HTML file. Be sure to answer all questions fully (there are multiple parts to each). To complete this assignment, you will be using an NLSY97 data frame object that I will upload to Canvas under this homework assignment's folder. Be sure to have this file loaded into your workspace before you begin running code. This assignment is worth a total of 100 points. 
+
+**Question \#1**: [**20 points**] Using the mutate() command within the **dplyr** package (or other suitable functions), create the following variables, then provide summaries of just the created variables (not the variables used to create them). Provide written interpretations of the mean, median, and range for each new variable (unless otherwise noted). 
+
+A) (*5 points*) Create an average variety score variable - *avg_varscore* that is equal to the average of three variables - *varscore99*, *varscore00*, and *varscore01*. Please note that *varscore98* should not be included in this average. 
+``` {r avg_varscore, echo=TRUE}
+NLSY97_HW5<-NLSY97_HW5 %>%
+
+mutate(avg_varscore=(varscore99 + varscore00 + varscore01)/3)
+
+summary(NLSY97_HW5$avg_varscore)
+```
+
+###Interpretation
+For the variable "avg_varscore" the mean of .4447 represents the average. Its also has a median of 0, and a max of 12.3333. The difference in the highest and lowest value is 12.3333 because the min 0 and the max is 12.3333
+
+B) (*5 points*) Create a total number of crimes variable - *tot_crimes* that is equal to the sum of three variables - *crime99*, *crime00*, and *crime01*. Please note that *crime98* should not be included in this total. 
+
+``` {r tot_crimes, echo=TRUE}
+NLSY97_HW5<-NLSY97_HW5 %>%
+
+mutate(tot_crimes=(crime99 + crime00 + crime01))
+
+summary(NLSY97_HW5$tot_crimes)
+```
+
+###Interpretation
+For the variable "tot_crimes" the mean of 7.4445 represents the average. This means the average crime for 1998-2001 is 7.4445 Its also has a median of 0, and a max of 544. The difference in the highest and lowest value is 544 because the min 0 and the max is 544.
+
+C) (*5 points*) Create a total number of arrests variable - *tot_arrests* that is equal to the sum of three variables - *arr99*, *arr00*, and *arr01*. Please note that *arr98* should not be included in this total. 
+
+``` {r tot_arrests, echo=TRUE}
+NLSY97_HW5<-NLSY97_HW5 %>%
+
+mutate(tot_arrests=(arr99 + arr00 + arr01))
+
+summary(NLSY97_HW5$tot_arrests)
+```
+
+###Interpretation
+For the variable "tot_arrests" the mean of .2836 represents the average. This means the average number of arrests for 1998-2001 was .2836 Its also has a median of 0, and a max of 14. The difference in the highest and lowest value is 14 because the min 0 and the max is 14.
+
+
+D) (*5 points*) Create squared versions of the following variables (use *_squared* at the end of each variable name for the new variable) - *age98*, *crime98*, *arr98*, *grhhinc98*, and *varscore98*. You **do not** need to interpret these new variables. 
+
+``` {r squared, echo=TRUE}
+NLSY97_HW5<-NLSY97_HW5 %>%
+mutate(age98_squared=(age98^2))
+summary(NLSY97_HW5$age98_squared)
+  
+NLSY97_HW5<-NLSY97_HW5 %>%
+mutate(crime98_squared=(crime98^2))
+summary(NLSY97_HW5$crime98_squared)
+  
+NLSY97_HW5<-NLSY97_HW5 %>%
+mutate(arr98_squared=(arr98^2))
+summary(NLSY97_HW5$arr98_squared)
+    
+NLSY97_HW5<-NLSY97_HW5 %>%
+mutate(grhhinc98_squared=(grhhinc98^2))
+summary(NLSY97_HW5$grhhinc98_squared)
+  
+NLSY97_HW5<-NLSY97_HW5 %>%
+mutate(varscore98_squared=(varscore98^2))
+summary(NLSY97_HW5$varscore98_squared)
+  
+```
+
+\newpage
+
+**Question \#2**: [**25 points**] For this question you need to estimate two propensity score matching procedures and then create new data frames just containing the matched pairs of youth. For this matching procedure, we will be predicting the probability a youth self-identifies as a gang member in the 1998 interview (*belgang98*) using characteristics we observe during the same interview. It is important that you run the set.seed() function **before** you run the propensity score match. Set the random number seed to 04272020.
+
+A) (*9 points*) Using the **matchit()** function, run a propensity score match predicting *belgang98* using the the following variables: *male*, *region*, *urban*,  and all the variables you created in Question #1 Part D (*age98*, *age98_squared*, etc...). Use a caliper of .10 and specify all other relevant options as I demonstrated in lecture. Be sure to store these results as an object for later use (I suggest calling it *match10*). Provide a summary of this new object and interpret the mean differences for the factor variables (male, region, urban) and the unsquared versions of each additional variable. What do these differences suggest about gang members relative to non-gang members?
+
+``` {r match10, echo = TRUE}
+match10<- matchit(belgang98~ male + region + urban + age98 + age98_squared + crime98 + crime98_squared + arr98 + arr98_squared + grhhinc98 + grhhinc98_squared + varscore98 + varscore98_squared, data = NLSY97_HW5, method = "nearest", distance = "logit", caliper = .10, discard = "both")
+summary(match10)
+
+```
+
+###Interpretation
+So when looking at the mean differences they are; male .0493, regionNorth Central .0131, regionNorthEast .0137, regionSouth - .0116, regionWest -.0124, urban .0781, age98 .0333, crime98 .0454, arr98 .1231, grhhinc -.0470, varscore -.0042. These differences suggest that all these factors play a role in whether or not the youth becomes a gang member. Negative can show that these have a chance to actually deter them from joining the gang where as the positive would represent reasons they would join.
+
+B) (*2 points*) From these matched results, create a new data frame called *matched_10* using the **match.data()** function from the **Matchit** package. Provide a summary of this data frame (you do not need to interpret it, just display it). 
+
+```{r matched_0, echo=TRUE}
+matched_10 <- match.data(match10)
+
+summary(matched_10)
+
+```
+
+
+
+
+C) (*12 points*) Estimate the same propensity score matching equation as in Part A, but this time use a caliper of .01. Be sure to store these results as an object for later use (I suggest calling it *match01*). Provide a summary of this new object and interpretations of the same mean differences as in Part A. Have these differences changed and if so, how? Be sure to fully explain your answer. 
+
+``` {r match01, echo = TRUE}
+match01<- matchit(belgang98~ male + region + urban + age98 + age98_squared + crime98 + crime98_squared + arr98 + arr98_squared + grhhinc98 + grhhinc98_squared + varscore98 + varscore98_squared, data = NLSY97_HW5, method = "nearest", distance = "logit", caliper = .01, discard = "both")
+summary(match01)
+
+```
+
+###Interpretation
+
+So when looking at the mean differences they are; male .0144, regionNorth Central -.1075, regionNorthEast .0802, regionSouth - .0272, regionWest .0581, urban .0915, age98 .0536, crime98 .0136, arr98 .1348, grhhinc -.0334, varscore -.0114. These differences suggest that all these factors play a role in whether or not the youth becomes a gang member. Negative can show that these have a chance to actually deter them from joining the gang where as the positive would represent reasons they would join.
+
+
+D) (*2 points*) From the *match01* results, create a new data frame called *matched_01* using the **match.data()** function from the **Matchit** package. Provide a summary of this data frame (you do not need to interpret it, just display it). 
+
+```{r matched_1, echo=TRUE}
+matched_01 <- match.data(match01)
+
+summary(matched_01)
+
+```
+
+\newpage
+
+**Question \#3**: [**25 points**] For this question you will need to evaluate covariate balance and common support for both of the matching algorithms you estimate in Question \#2.
+
+A) (*10 points*) Using the *match10* object you created above, evaluate the assumptions of common support and covariate balance for this matching algorithm. Was the algorithm successful or unsuccessful in balancing all covariates post-matching? Be sure to explain your answer. 
+
+``` {r covariate match10, echo=TRUE}
+covariatebal_plot_match10<-plot(match10)
+summary(covariatebal_plot_match10)
+
+common_supp_match10 <- plot(match10, type = "hist")
+summary(common_supp_match10)
+```
+
+###Interpretation
+The covariate balancing seems be successful because when looking at the matched graphs less of the points fall outside of the balancing line vs in the all graphs more points fall outside of it. 
+The common support also seems successful because when looking at the histograms the the raw treated and control dont look similar. But when you look at the matched control and treated they are practically the same, so it leads me to the conclusion that it was successful.
+
+B) (*10 points*) Using the *match01* object you created above, evaluate the assumptions of common support and covariate balance for this matching algorithm. Was the algorithm successful or unsuccessful in balancing all covariates post-matching? Be sure to explain your answer. 
+
+
+``` {r covariate match01, echo=TRUE}
+covariatebal_plot_match01<-plot(match01)
+summary(covariatebal_plot_match01)
+
+common_supp_match01 <- plot(match01, type = "hist")
+summary(common_supp_match01)
+```
+
+###Interpretation
+The covariate balancing seems be successful because when looking at the matched graphs less of the points fall outside of the balancing line. But it doesnt seem as successful as 3A because it still contains quite a bit of points that fall outside of the 45 degree line. 
+The common support also seems successful because when looking at the histograms the the raw treated and control dont look similar. But when you look at the matched control and treated they are practically the same, so it leads me to the conclusion that it was successful.It seems to follow how it went in part 3A.
+
+C) (*5 points*) Discuss the differences and/or similarities between the two sets of results in Part A and B of this question. In which algorithm are covariates better balanced and the common support assumption most plausible? Or, do both sets of results produce practically equivalent results? Be sure to explain your answer. 
+
+###Answer
+When comparing the two i would say match10 seems to be more plausible. I came to this conclusion because when looking at each respectively. It seems that match 10 was having higher successful covariate balanced charts. Although both sets look identical it seems as if 
+
+\newpage
+
+**Question \#4**: [**30 points**] For this final question, you are required to estimate a series of t-tests with the original and matched data sets. You will then need to compare the t-test results from the different matching algorithms you estimated above and compare your findings using a less or more conservative caliper (i.e., .10 compared to .01). 
+
+A) (*6 points*) Using the **t.test()** function, estimate a series of t-tests in the full sample for the following outcomes: *avg_varscore*, *tot_arrests*, and *tot_crimes* (you created these for Question #1). Interpret the results from each test and indicate whether the difference is significant or not. Be sure to fully explain each interpretation. 
+
+``` {r avg_scorettest, echo = TRUE}
+with(NLSY97_HW5, t.test(avg_varscore~belgang98))
+
+with(NLSY97_HW5, t.test(tot_arrests~belgang98))
+
+with(NLSY97_HW5, t.test(tot_crimes~belgang98))
+
+```
+
+###Interpretation
+When looking at the full sample for avg_varscore, tot_arrests, and tot_crimes the treatment effect is equivalent to 1.04, .98, and 24.16 respectfully. This implies that the average variety score went up by 1.04 throughout 1998-2001, also that the total amount of crime went up about .98 throughout 1998-2001, and that total crime rose by 24.16 throughout 1998-2001. When looking at these numbers they seem to be the whole scope of the study. So with no matched treatment yet ran i understand why they are so large. I expect that in part B and C we see the numbers drop, especially the total crime estimate. This shows that gang members commit atleast one variety crime 1.04 times more than none gang members over the span of 1998-2001, also that they are arrested .98 times more than non gang members, and they commit crimes 24.16 times more than non gang members. 
+
+
+B) (*9 points*) Using the **t.test()** function, estimate a series of t-tests in the **matched_10** sample for the following outcomes: *avg_varscore*, *tot_arrests*, and *tot_crimes* (you created these for Question #1). Interpret the results from each test and indicate whether the difference is significant or not. Compare these results to those using the full sample. Be sure to fully explain each interpretation and comparison.
+
+
+``` {r matched_10, echo = TRUE}
+with(matched_10, t.test(avg_varscore~belgang98))
+
+with(matched_10, t.test(tot_arrests~belgang98))
+
+with(matched_10, t.test(tot_crimes~belgang98))
+
+```
+
+###Interpretation
+When looking at the matched with a caliper of .10 sample for avg_varscore, tot_arrests, and tot_crimes the treatment effect estimate is equivalent to .25, .5, and 7.2 respectfully. This implies that the average variety score went up by .25 throughout 1998-2001, also that the total amount of arrests went up about .5 throughout 1998-2001, and that total crime rose by 7.2 throughout 1998-2001. Now given that it has a caliper of .10 i feel like once we calculate the t-test for the .01 they may have even smaller numbers. I would think this is because the .01 is more conservative than the .10. We see this be the case with the full sample vs .10 the numbers change quite a bit when they are compared.
+This shows that gang members commit a atleast one variety crime .25 times more than none gang members over the span of 1998-2001, also that they are arrested .5 times more than non gang members, and they commit crimes 7.2 times more than non gang members. 
+
+
+C) (*9 points*) Using the **t.test()** function, estimate a series of t-tests in the **matched_01** sample for the following outcomes: *avg_varscore*, *tot_arrests*, and *tot_crimes* (you created these for Question #1). Interpret the results from each test and indicate whether the difference is significant or not. Compare these results to those using the full sample. Be sure to fully explain each interpretation and comparison. 
+
+``` {r matched_01, echo = TRUE}
+with(matched_01, t.test(avg_varscore~belgang98))
+
+with(matched_01, t.test(tot_arrests~belgang98))
+
+with(matched_01, t.test(tot_crimes~belgang98))
+
+```
+
+###Interpretation 
+When looking at the matched with a caliper of .10 sample for avg_varscore, tot_arrests, and tot_crimes the treatment effect estimate is equivalent to .27, .37, and 2.98 respectfully. This implies that the average variety score changed by .27 throughout 1998-2001, also that the total amount of arrests went up about .37 throughout 1998-2001, and that total crime rose by 2.98 throughout 1998-2001. Now given that it has a caliper of .01, it seems i was right in my previous interpretation, the numbers feel and that can be because we are now using a more strict caliper of .01. These numbers are significantly smaller than those calculated from the full sample.This shows that gang members commit a atleast one variety crime .27 times more than none gang members over the span of 1998-2001, also that they are arrested .37 times more than non gang members, and they commit crimes 2.98 times more than non gang members.
+
+
+D) (*6 points*) Finally, compare your results from Parts B and C - do the t-test results differ when we use the less conservative caliper (.10) than the more conservative caliper (.01)? Why might we expect the results to differ? Be sure to fully explain your answer. 
+
+###Interpretation 
+
+They differ because allowing .10 for error allows more than what the .01 allows. We expect the results to differ because you are giving more room for error by having one t-test at .10 and the other at .01. The .01 is more strict were as the .10 is alot more lenient. So we expected the rsults to differ because of the fact that we are changing the caliper by a significant amount.

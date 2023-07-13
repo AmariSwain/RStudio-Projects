@@ -1,0 +1,285 @@
+---
+title: 'Homework #4'
+author: "Amari Swain"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## Instructions
+
+For this assignment you will be importing an Excel data set as a data frame, creating new variables within that data frame, and estimating a multivariate regression. The data for the following questions come from the **2018_statedata** Excel file (posted on Canvas). This is a continuation of a prior assignment so you should be somewhat familiar with these data but I have added and deleted some columns for the purpose of this assignment (variable descriptions are at the end of this assignment sheet).  The assignment is worth a total of 135 points.  
+
+## Question #1
+
+**21 points**
+
+This question requires you to create several new variables **within** a data frame out of pre-existing variables within the **2018_statedata** Excel file. First, though, you need to import the Excel data set as a data frame object. This can be accomplished using a combination of the **data.frame()** function and the **read.table()** function.
+
+A) [*3 points*] Import the **2018_statedata** Excel file as a data frame and name it state_data. Be sure to use the read.table() function to accomplish this and make sure that the Excel file is in the same folder as your .rmd file. Provide a summary of this data frame. 
+
+``` {r loadexcel, echo=TRUE}
+library(readxl)
+state_data <- read_excel("2018_statedata (1).xlsx")
+summary(state_data)
+```
+
+B) [*3 points*] Create an unemployment rate variable - called unemp_rate - which indicates the number of persons per 100 individuals in the population that report being unemployed in 2018. Provide a summary of this variable and show that it has a length of 50.
+
+```{r unemp_rate, echo=TRUE}
+state_data$unemp_rate <- (state_data$unemp/state_data$population)*100
+length(state_data$unemp_rate)
+summary(state_data$unemp_rate)
+```
+
+C) [*3 points*] Create a police per capita variable - called officer_percap - which indicates the number of uniform law enforcement officers per 1,000 people in the population. Provide a summary of this variable and show that it has a length of 50. 
+
+``` {r officer_percap, echo=TRUE}
+state_data$officer_percap <- (state_data$officers/state_data$population)*1000
+length(state_data$officer_percap)
+summary(state_data$officer_percap)
+```
+D) [*3 points*] Create a population density variable - called pop_dens - which indicates the number of individuals in a state per every square mile. Provide a summary of this variable and show that it has a length of 50. 
+
+```{r pop_dens, echo=TRUE}
+state_data$pop_dens <- (state_data$population/state_data$land_area)
+length(state_data$pop_dens)
+summary(state_data$pop_dens)
+```
+E) [*3 points*] Create a variable that indicates the percent of the population that is between the ages of 15 and 24 - call it perc_15to24. Provide a summary of this variable and show that it has a length of 50. 
+
+``` {r perc_15to24, echo=TRUE}
+state_data$perc_15to24 <- (state_data$pop_15to24/state_data$population)*100
+length(state_data$perc_15to24)
+summary(state_data$perc_15to24)
+```
+F) [*3 points*] Create a variable that indicates the percent of the population that is age 65 or older - call it perc_65over. Provide a summary of this variable and show that it has a length of 50. 
+
+``` {r perc_65over, echo=TRUE}
+state_data$perc_65over <- (state_data$pop_65over/state_data$population)*100
+length(state_data$perc_65over)
+summary(state_data$perc_65over)
+```
+G) [*3 points*] Create an urban population variable - called urban_perc - that reflects the percent of the population that lives in urban areas. Provide a summary of this variable and show that it has a length of 50. 
+
+``` {r urban_perc, echo=TRUE}
+state_data$urban_perc <- (state_data$urban_pop/state_data$population)*100
+length(state_data$urban_perc)
+summary(state_data$urban_perc)
+```
+
+\newpage
+
+## Question #2
+
+**36 points**
+
+For this question you will need to estimate a series of scatterplots with the ggplot() function to visually examine the bivariate relationships between the variables in this data frame. You will also need to comment on the apparent linearity of these bivariate relationsips and indicate whether there appear to be outliers. 
+
+A) [*6 points*] Visually examine the bivariate relationship between the unemployment rate and 1) the property crime rate and, 2) the violent crime rate (**Hint** - there should be two separate graphs). Comment on the apparent direction of these relationships and whether they are consistent across crime rate types (i.e., is the unemployment rate related to both crime rates in the same direction?).
+
+```{r property&violent/unemp, echo=TRUE}
+ggplot(state_data, aes(x=unemp_rate, y = prop_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+
+ggplot(state_data, aes(x=unemp_rate, y = viol_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+```
+
+##Interpertation
+
+For prop_rate it seems that it has a positive relationship with unemp_rate, meaning as unemp_rate increases the prop_rate seeming increases as well. but we see the most property crime happening in the 1 to 2 range.THere seem to be outliers that fall above 3300.
+
+For viol_rate it also seeming has a positive relation with unemp_rate, as the unemp_rate increases so does viol crime rate as we can see by the blue line trending upward. THere seem to be outliers that occur above 750 viol_rate
+
+B) [*6 points*] Visually examine the bivariate relationship between police per 1,000 population and 1) the property crime rate and, 2) the violent crime rate (**Hint** - there should be two separate graphs). Comment on the apparent direction of these relationships and whether they are consistent across crime rate types (i.e., is police per capita related to both crime rates in the same direction?).
+
+```{r property&violent/police, echo=TRUE}
+ggplot(state_data, aes(x=officer_percap,y = prop_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+ggplot(state_data, aes(x=officer_percap,y = viol_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+```
+
+##Interpertation
+
+For this graph it seems prop_rate and officer_percap have a negative relation, meaning when there are more officers present the property crime rate seemingly decreases. Which makes sense as that is usually the case with a higher police presents. The outliers would fall above the 3250 line for prop_rate.
+
+For viol_rate and officer_percap, it seems the relation is mostly nuetral, it may have a very slight positive but it would be extremely slight. The outliers fall above the 750 line for viol_rate.
+
+C) [*6 points*] Visually examine the bivariate relationship between percent foreign born and 1) the property crime rate and, 2) the violent crime rate (**Hint** - there should be two separate graphs). Comment on the apparent direction of these relationships and whether they are consistent across crime rate types (i.e., is the percent foreign born related to both crime rates in the same direction?).
+
+``` {r property&violent/foreign, echo=TRUE}
+ggplot(state_data, aes(x=perc_fb, y = prop_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+ggplot(state_data, aes(x=perc_fb, y = viol_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+```
+
+##Interpetation
+
+For prop_rate x perc_fb, they have a negative relation meaning prop_rate decreases where there is a higher percent of foreign born people. The outliers for this graph fall above the 3250 line for prop_rate.
+
+For viol_rate x perc_fb, they seem to have the slightest positive relation, meaning as the percent of foreign born people rises the viol crime rate seems to increases slightly. There are a couple of outliers that fall above the 750 viol_rate.
+
+D) [*6 points*] Visually examine the bivariate relationship between population density and 1) the property crime rate and, 2) the violent crime rate (**Hint** - there should be two separate graphs). Comment on the apparent direction of these relationships and whether they are consistent across crime rate types (i.e., is the population density related to both crime rates in the same direction?).
+
+``` {r property&violent/pop_dens, echo=TRUE}
+ggplot(state_data, aes(x=pop_dens, y = prop_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+ggplot(state_data, aes(x=pop_dens, y = viol_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+```
+
+##Interpetation 
+
+For prop_rate x pop_dens they have a strong negative relation. We can see as the pop_dens decrease so does the property crime rate. So when there are less people in a square mile the property crime rate tends to fall. There are 3 outliers that fall above the 3250 prop_rate line.
+
+For viol_rate x pop_dens there is also a negative relation between the two. It also seems that when the pop_dens decreases the viol crime rate falls its not as drastic as the prop crime rate. There are 2 outliers that fall above the 750 viol_rate line.
+
+E) [*6 points*] Visually examine the bivariate relationship between percent age 65 or over and 1) the property crime rate and, 2) the violent crime rate (**Hint** - there should be two separate graphs). Comment on the apparent direction of these relationships and whether they are consistent across crime rate types (i.e., is percent 65 and over related to both crime rates in the same direction?).
+
+``` {r property&violent/perc_65over, echo=TRUE}
+ggplot(state_data, aes(x=perc_65over, y = prop_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+ggplot(state_data, aes(x=perc_65over, y = viol_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+```
+
+##Interpetation
+
+For prop_rate x perc_65over we can see that the relation is negative, meaning as the percent of the population that are 65 and over increases the property crime rate decreases.There seem to be 3 outliers that fall above the 3250 line in prop_rate.
+
+For viol_rate x perc_65over it seems that they also have a negative relation, meaning the same as before when the percent of the pop 65 or over increases they seeming have a less viol crime rate. There seems to be 2 outliers that fall about 750 viol_rate.
+
+F) [*6 points*] Visually examine the bivariate relationship between percent urban residents and 1) the property crime rate and, 2) the violent crime rate (**Hint** - there should be two separate graphs). Comment on the apparent direction of these relationships and whether they are consistent across crime rate types (i.e., is the percent of urban residents related to both crime rates in the same direction?).
+
+``` {r property&violent/urban_perc, echo=TRUE}
+ggplot(state_data, aes(x=urban_perc, y= prop_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+ggplot(state_data, aes(x=urban_perc, y = viol_rate)) + geom_point() + geom_smooth(method = "lm",color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+```
+
+##Interpetation
+
+For prop_rate x urban_perc they seem to have a positive relation, where as the urban percent of the population increases so does the property crime rate. There seem to be outliers that fall above 3250 with 3 points falling there.
+
+For viol_rate x urban_perc it seems they also have a positive relation, where as when the urban percent population increases so does the viol crime rate. There are 2 outliers that fall above the 750 line.
+
+\newpage
+
+## Question #3
+
+**48 points**
+
+For this question you will need to estimate a series of multivariate regressions rotating through three dependent variables - the property crime rate per 100,000 (*prop_rate*) the violent crime rate per 100,000 (*viol_rate*), and the total crime rate per 100,000 (*total_rate*). For each, you will need to identify which independent variables have significant relationships with the dependent variables, interpret those slope estimates, and compare the relationships for individual independent variables across these regressions (i.e,, is the slope estimate for police per capita 1) routinely significant across models and, 2) in the same directon (positive/negative)?.
+
+A) [*12 points*] Estimate a multivariate regression predicting values of the property crime rate (*prop_rate*) using the following independent variables: perc_fb, unemp_rate, officer_percap, pop_dens, perc_15to24, perc_65over, and urban_perc. Be sure to store the regression as an object (name it prop_reg) and provide a summary for it. Identify which of these independent variables share a significant relationship with the property crime rate (be sure to note the probability values - e.g., less than .10, less than .05, less than .01, less than .001) and interpret the slope estimates for all relationships. Finally, provide an interpretation for the intercept value and Adjusted $R^{2}$ statistic. 
+
+``` {r prop_reg, echo=TRUE}
+prop_reg<- lm(prop_rate~perc_fb+unemp_rate+officer_percap+pop_dens+perc_15to24+perc_65over+urban_perc, data=state_data)
+
+summary(prop_reg)
+```
+
+##Interpetation
+
+For prop_reg it seems that pop_den is the only independent variable that has a significant relationship with property crime rate in this multivariate regression, with a .001 Significant code. It is the closest value to 0 in the Pr column. So the Intercept estimate is about 4247, so for each independent variable when the intercept estimate moves a unit we can expect the independent variable to move with its estimate. So for perc_fb we expect property crime rate to decrease by about 16, unemp_rate we expect to increase by about 275, officers_percap to increase about 75, pop_dens we expect to decrease by about 1, perc_15to24 we expect to decrease by about 153, perc_65over we expect to decrease by about 85, and urban_perc we expect to increase by about 16. Looking at the adjusted R-squared we can tell that about property crime is explained by about 22.72% of the variation of all independent variables but not whats causing the variation 
+
+B) [*12 points*] Estimate a multivariate regression predicting values of the violent crime rate (*viol_rate*) using the following independent variables: perc_fb, unemp_rate, officers_percap, pop_dens, perc_15to24, perc_65over, and urban_perc. Be sure to store the regression as an object (name it viol_reg) and provide a summary for it. Identify which of these independent variables share a significant relationship with the violent crime rate (be sure to note the probability values - e.g., less than .10, less than .05, less than .01, less than .001) and interpret the slope estimates for all relationships. Finally, provide an interpretation for the intercept value and Adjusted $R^{2}$ statistic.  
+
+
+``` {r viol_reg, echo=TRUE}
+viol_reg<- lm(viol_rate~perc_fb+unemp_rate+officer_percap+pop_dens+perc_15to24+perc_65over+urban_perc, data=state_data)
+
+summary(viol_reg)
+```
+##Interpetation
+
+For viol_reg it seems that pop_den is the independent variable that has the most significant relationship with violent crime rate in this multivariate regression, with a .01 Significant code. While unemp_rate  also have a significant relationship of 0.05 respectively. They are the closest value to 0 in the Pr column. So the Intercept estimate is about 318, so for each independent variable when the intercept estimate moves a unit we can expect the independent variable to move with its estimate. So for perc_fb we expect violent crime rate to see a slight decrease by about 1.59, unemp_rate we expect to increase by about 135, officers_percap to increase by about 75, pop_dens we expect a slight decrease by about .36, perc_15to24 we expect to decrease by about 21.88, perc_65over we expect to decrease by about 12.99, and urban_perc we expect to increase by about 3.24. Looking at the adjusted R-squared we can tell that about violent crime is explained by about 16.93% of the variation of all independent variables but not whats causing the variation.
+
+C) [*12 points*] Estimate a multivariate regression predicting values of the total crime rate (*total_rate*) using the following independent variables: perc_fb, unemp_rate, officers_percap, pop_dens, perc_15to24, perc_65over, and urban_perc. Be sure to store the regression as an object (name it total_reg) and provide a summary for it. Identify which of these independent variables share a significant relationship with the total crime rate (be sure to note the probability values - e.g., less than .10, less than .05, less than .01, less than .001) and interpret the slope estimates for all relationships. Finally, provide an interpretation for the intercept value and Adjusted $R^{2}$ statistic. 
+
+
+``` {r total_reg}
+total_reg<- lm(total_rate~perc_fb+unemp_rate+officer_percap+pop_dens+perc_15to24+perc_65over+urban_perc, data=state_data)
+
+summary(total_reg)
+
+```
+##Interpetation 
+
+For total_reg it seems that pop_den is the independent variable that has the most significant relationship with total crime rate in this multivariate regression, with a .01 Significant code. While unemp_rate also have a significant relationship of 0.1 respectively. They are the closest value to 0 in the Pr column. So the Intercept estimate is about 4566, so for each independent variable when the intercept estimate moves a unit we can expect the independent variable to move with its estimate. So for perc_fb we expect total crime rate to see a decrease by about 17.96, unemp_rate we expect to increase by about 410.93, officers_percap to increase by about 150.46, pop_dens we expect a slight decrease by about 1.75, perc_15to24 we expect to decrease by about 175.51, perc_65over we expect to decrease by about 98.29, and urban_perc we expect to increase by about 19.74. Looking at the adjusted R-squared we can tell that about total crime is explained by about 24.31% of the variation of all independent variables but not whats causing the variation.
+
+D) [*12 points*] Discuss any significant differences across these models with respect to the relationship shared between each individual independent variable and the various types of crime rates. You should write about whether 1) the slope estimate is routinely significant (or not) across these models and, 2) if the slope estimate is in the same (or different) direction.
+
+Throughout each multivariate regression we see that population density has the most significant relationship with all three crime rates. When looking at violent crime rate and total crime rate we can see that unemp_rate also has a significant relationship  of .01 for viol_rate and .05 for total_rate. When looking at; perc_fb, pop_dens, perc_15to24, and perc_65over throughout the three crime rates we see that they are all routinely negative. Where as for unemp_rate, officer_percap, and urban_perc all are routinely positive throughout the three crime rates.
+
+\newpage
+
+## Question #4
+
+**30 points**
+
+For this question you are tasked with evaluating whether the multivariate regressions estimated in the prior question violate two prominent assumptions of regression. Namely, that 1) errors are normally distributed and 2) variance of the errors is homoskedastic. 
+
+A) [*10 points*] Visually evaluate if the multivariate regression predicting the property crime rate per 100,000 has normally distributed and homoskedastic errors. Describe each graph and indicate if the regression assumption associated with each has been violated. *Note* - This will require two separate graphs and interpretations for each!
+
+``` {r prop_errors, echo=TRUE}
+ggplot(prop_reg, aes(x=prop_reg$residuals)) + geom_density() + geom_vline(xintercept = 0, color="red")
+
+ggplot(prop_reg, aes(x=prop_reg$fitted.values, y=prop_reg$residuals)) + geom_point() +
+geom_smooth(method = 'lm', color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+
+```
+
+##Interpetation
+
+When looking at the first graph it doesnt seem to contain any normally distributed errors. The peck of the curve falls right on the vline and the tail seems to be correct. When looking at the second graph my red line crosses over the blue horizontal line in 3 places making it seem like the errors are homoskedastic, because it stays relatively close to the linear line and just has slight dips.
+
+B) [*10 points*] Visually evaluate if the multivariate regression predicting the violent crime rate per 100,000 has normally distributed and homoskedastic errors. Describe each graph and indicate if the regression assumption associated with each has been violated. *Note* - This will require two separate graphs and interpretations for each!
+
+``` {r viol_errors, echo=TRUE}
+ggplot(viol_reg, aes(x=viol_reg$residuals)) + geom_density() + geom_vline(xintercept = 0, color="red")
+
+ggplot(viol_reg, aes(x=viol_reg$fitted.values, y=viol_reg$residuals)) + geom_point() +
+geom_smooth(method = 'lm', color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+
+```
+
+##Interpetation
+
+When looking at the first graph it seems we may see a slight error because the bell curve is slightly off kilter. So the peek isnt right above 0 so there is a peek in more negative errors that occur before 0. But it is still relatively close to 0 so there isnt any errors that standout. When looking at the second graph it stays right around that linear line with slight dips below and at the beginning and end where they are far both the linear line but id still see this as homoskedastic.
+
+C) [*10 points*] Visually evaluate if the multivariate regression predicting the total crime rate per 100,000 has normally distributed and homoskedastic errors. Describe each graph and indicate if the regression assumption associated with each has been violated. *Note* - This will require two separate graphs and interpretations for each!
+
+``` {r total_errors, echo=TRUE}
+ggplot(total_reg, aes(x=total_reg$residuals)) + geom_density() + geom_vline(xintercept = 0, color="red")
+
+ggplot(total_reg, aes(x=total_reg$fitted.values, y=total_reg$residuals)) + geom_point() +
+  geom_smooth(method = 'lm', color="blue", se=FALSE) + geom_smooth(method = "loess", color = "red", se=FALSE)
+```
+
+##Interpetation
+
+When looking at the first graph it seems that it is shifted right slightly meaning you have more positive errors than negative. But the peek happens pretty close to 0 so it seems they are normally distributed but favor the positives a little more. When looking at the second graph it seems to follow the trend of the the graphs in question 4 with it remaining homoskedastic, but still dipping below the linear line slightly.
+
+\newpage
+
+## Variable Descriptions
+
+1) prop_rate - Rate of property crimes per 100,000 population in 2018
+2) viol_rate - Rate of violent crimes per 100,000 population in 2018
+3) total_rate - Rate of all crimes per 100,000 population in 2018
+4) population - Estimated state population in 2018
+5) unemp - Average number of monthly unemployed persons in 2018
+6) officers - Number of uniformed law enforcement officers in 2018
+7) land_area - Area of state in square miles
+8) perc_fb - Estimated percent of state population that is foreign born in 2018
+9) pop_15to24 - Estimated count of state population that is between the ages of 15 to 24 in 2018
+10) pop_65over - Estimated count of state population that is 65 years or older in 2018
+11) urban_pop - Estimated count of state population that lives in urban areas in 2018

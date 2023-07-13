@@ -1,0 +1,173 @@
+---
+title: 'Homework #3'
+author: "Amari Swain"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Instructions
+
+For the following questions you will need to draw on the lecture on probability and inferential statistics as well as all prior R and RMarkdown tutorials. The assignment begins with some simple probability questions that do not require much R programming, then moves forward to using a new data set on lethal interventions to ask similar questions of you. To submit this assignment, you will need to upload both a knitted HTML or Word document along with the original markdown file you use to create the document. The assignment is worth a total of 105 points. Please make sure you show all of your work and be sure to label your answers appropriately (so that I know which part of the question you are providing an answer to)!
+
+### Question #1 
+
+**8 points**
+
+Suppose that a computer company has five systems: two primary and three backup. The probability that one system fails on a given day is 0.005. If each system is indepedent, what is the probability that all five systems will fail simultaneously?
+
+$.005^{5} = `r format(.005^5, scientific=FALSE)`$
+
+### Question #2
+
+**33 points**
+
+The following data show a contingency table of the association between political affiliation and support for the death penalty. Answer the following questions using this table. 
+
+
++-------------+---------------------------+-------+
+|             | Support the Death Penalty |       |
++-------------+--------------+------------+-------+
+| Party       |    Support   |   Oppose   | Total |
++-------------+--------------+------------+-------+
+| Republican  |      697     |     204    |  901  |
++-------------+--------------+------------+-------+
+| Democrat    |      612     |     652    |  1264 |
++-------------+--------------+------------+-------+
+| Independent |      274     |     159    |  433  |
++-------------+--------------+------------+-------+
+| Total       |     1583     |    1015    |  2598 |
++-------------+--------------+------------+-------+
+
+a. [*2 points*] What fraction of the sample opposes the death penalty?
+$\frac{1015}{2598} = `r format(1015/2598, scientific=FALSE)`$
+
+b. [*2 points*] What fraction of the sample is Democrat?
+$\frac {1264}{2598} = `r format(1264/2598, scientific=FALSE)`$
+
+c. [*3 points*] What fraction of the sample either supports the death penalty or is a Republican?
+$(\frac {1538}{2598}) + (\frac{901}{2598}) - (\frac{697}{2598}) = `r format((1538/2598) + (901/2598) - (697/2598), scientific=FALSE)`$
+
+d. [*3 points*] What fraction of the same is either Independent or Democrat?
+$(\frac {1264}{2598}) + (\frac{433}{2598}) = `r format ((1264/2598) + (433/2598), scientific=FALSE)`$
+
+e. [*4 points*] What fraction of Republicans supports the death penalty?
+$\frac {697}{901} = `r format ((697/901), scientific=FALSE)`$
+
+f. [*4 points*] What fraction of Democrats supports the death penalty?
+$\frac {612}{1264} = `r format ((612/1264), scientific=FALSE)`$
+
+g. [*4 points*] What fraction of Independents supports the death penalty?
+$\frac {274}{433} = `r format ((274/433),scientific=FALSE)`$
+
+h. [*6 points*] Compare your answers from questions (e) -- (g). What political affilitation appears to be the most supportive of the death penalty? What political affiliation appears to be least supportive of the death penalty? 
+
+Based on the my answers Republicans appear to be the most supportive group of the death penalty. While Democrats are the least supportive group.
+
+i. [*5 points*] What fraction of the sample is an Independent who supports the death penalty?
+$(\frac {433}{2598}) * (\frac {274}{433}) = `r format ((433/2598) * (274/433), scientific=FALSE)`$
+
+\newpage
+
+### Question #3
+
+**20 points**
+
+In 2016, there were 6,613,500 adults under correctional supervision. During this same year, the U.S. adult (i.e., 18 or older) population was estimated to be 243,300,000.
+
+a. [*4 points*] Compute the probability that a randomly selected adult in the U.S. is under correctional supervision. 
+$\frac {6613500}{243000000} = `r format (6613500/243000000, scientific=FALSE)`$
+b. [*10 points*] Using the figure you computed from question (a) as the true population proportion, construct a binomial probability distribution for 5 "trials," where a "success" is defined as the event that a person is under correctional supervision. .
+
++---+-------+-----------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
+| r | C^n_r | p^r q^n-r                                                                                     | p(r)                                                              |
++---+-------+-----------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
+| 0 | 1     | $(1)(.027^{0})(.973^{5})=`r format((.027^0)*(.973^5), nsmall=5, digits=5)`$                   | $(1)(.87210)=`r format((1)*(.87210), scientific=FALSE)`$          |
++---+-------+-----------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
+| 1 | 5     | $(5)(.027^{1})(.973^{4})=`r format((.027^1)*(.973^4), nsmall=5, digits=5)`$                   | $(5)(.02420)=`r format((5)*(.02420), scientific=FALSE)`$          |
+|   |       |                                                                                               |                                                                   |
++---+-------+-----------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
+| 2 | 10    | $(10)(.027^{2})(.973^{3})=`r format((.027^2)*(.973^3), nsmall=5, digits=1, scientific=FALSE)`$ | $(10)(.00067153)=`r format((10)*(.00067153), scientific=FALSE)`$  |
++---+-------+-----------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
+| 3 | 10    | $(10)(.027^{3})(.973^{2})=`r format((.027^3)*(.973^2), nsmall=5, digits=1, scientific=FALSE)`$ | $(10)(.000018634)=`r format((10)*(.000018634),scientific=FALSE)`$ |
++---+-------+-----------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
+| 4 | 5     | $(5)(.027^{4})(.973^{1})=`r format((.027^4)*(.973^1), nsmall=5, digits=1, scientific=FALSE)`$ | $(5)(.0000005)=`r format((5)*(.0000005),scientific=FALSE)`$       |
++---+-------+-----------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
+| 5 | 1     | $(1)(.027^{5})(.973^{0})=`r format((.027^5)*(.973^0), nsmall=5, digits=1, scientific=FALSE)`$ | $(1)(.00000001)=`r format((1)*(.00000001),scientific=FALSE)`$     |
++---+-------+-----------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
+
+c. [*6 points*] What is the probability that five or fewer adults from a sample of 100 will be under correctional supervision?
+
++-------+----------+--------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+--+
+| r     | C^n_r    | p^rq^n-r                                                                                               | p(r)                                                                                                                                                     |  |
++-------+----------+--------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+--+
+| 0     | 1        | $(1)(.027^{0})(.973^{100})=`r format((.027^0)*(.973^100), nsmall=5, digits=5)`$                        | $(1)(.064757)=`r format((1)*(.064757), scientific=FALSE)`$                                                                                               |  |
++-------+----------+--------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+--+
+| 1     | 100      | $(100)(.027^{1})(.973^{99})=`r format((.027^1)*(.973^99), nsmall=5, digits=5)`$                        | $(100)(.0017969)=`r format((100)*(.0017969), scientific=FALSE)`$                                                                                         |  |
++-------+----------+--------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+--+
+| 2     | 4950     | $(4950)(.027^{2})(.973^{98})=`r format((.027^2)*(.973^98), nsmall=5, digits=1, scientific=FALSE)`$     | $(4950)(.00005)=`r format((4950)*(.00005), scientific=FALSE)`$                                                                                           |  |
++-------+----------+--------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+--+
+| 3     | 161700   | $(161700)(.027^{3})(.973^{97})=`r format((.027^3)*(.973^97), nsmall=5, digits=1, scientific=FALSE)`$   | $(161700)(.000001)=`r format((161700)*(.000001), scientific=FALSE)`$                                                                                     |  |
++-------+----------+--------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+--+
+| 4     | 3921225  | $(3921225)(.027^{4})(.973^{96})=`r format((.027^4)*(.973^96), nsmall=5, digits=1, scientific=FALSE)`$  | $(3921225)(.00000004)=`r format((3921225)*(.00000004), scientific=FALSE)`$                                                                               |  |
++-------+----------+--------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+--+
+| 5     | 75287520 | $(75287520)(.027^{5})(.973^{95})=`r format((.027^5)*(.973^95), nsmall=5, digits=1, scientific=FALSE)`$ | $(75287520)(.000000001)=`r format((75287520)*(.000000001), scientific=FALSE)`$                                                                           |  |
++-------+----------+--------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+--+
+| Total |          |                                                                                                        | $\sum({.064757}+{.17969}+{.2475}+{.1617}+{.156849}+{.07528752})= `r format((.064757 + .17969 + .2475 + .1617 + .156849 + .07528752), scientific=FALSE)`$ |  |
++-------+----------+--------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+--+
+
+
+
+### Question #4
+
+**44 points**
+
+The following contingency table provides a joint distribution of county type and violent crime rate. Use this table to answer the following questions. 
+
+
++--------+---------------------+-------+
+|        |  Violent Crime Rate |       |
++--------+-----+--------+------+-------+
+| County | Low | Medium | High | Total |
++--------+-----+--------+------+-------+
+| Urban  |  78 |   105  |  192 |  375  |
++--------+-----+--------+------+-------+
+| Rural  | 165 |   87   |  51  |  303  |
++--------+-----+--------+------+-------+
+| Total  | 243 |   192  |  243 |  678  |
++--------+-----+--------+------+-------+
+
+a. [*2 points*] What proportion of the sample has a high violent crime rate?
+$\frac {243}{678} = `r format (243/678, scientific=FALSE)`$
+
+b. [*2 points*] What proportion of the sample has a medium violent crime rate?
+$\frac {192}{678} = `r format (192/678, scientific=FALSE)`$
+
+c. [*3 points*] What proportion of the sample is either Urban or has a high violent crime rate?
+$(\frac {375}{678}) + (\frac {243}{678}) - (\frac {192}{678}) = `r format ((375/678) + (243/678) - (192/678), scientific=FALSE)`$
+d. [*3 points*] What proportion of the sample has a low or medium violent crime rate?
+$(\frac {243}{678}) + (\frac {192}{678}) = `r format ((243/678)+(192/678), scientific=FALSE)`$
+
+e. [*3 points*] What proportion of the sample is an urban county with a high violent crime rate?
+$(\frac {375}{678}) * (\frac {192}{375}) = `r format (((375/678) * (192/375)), scientific=FALSE)`$
+
+f. [*3 points*] What proportion of the sample is a rural county with a high violent crime rate?
+$(\frac {303}{678}) * (\frac {51}{303}) = `r format (((303/678) * (51/303)), scientific=FALSE)`$
+
+g. [*6 points*] Compare the answers of e and f and compute the percentage difference between those proportions using the answer from f as the baseline value. Interpret the resulting value.
+$\frac {(192/678) - (51/678)}{51/678}(100) = `r format ((((192/678)-(51/678)) * 100), scientific=FALSE)`$
+
+h. [*3 points*] What proportion of the sample is an urban county with a low violent crime rate?
+$(\frac {375}{678}) * (\frac {78}{375}) = `r format (((375/678) * (78/375)), scientific=FALSE)`$
+
+i. [*3 points*] What proportion of the sample is a rural county with a low violent crime rate?
+$(\frac {303}{678}) * (\frac {165}{303}) = `r format (((303/678) * (165/303)), scientific=FALSE)`$
+
+j. [*6 points*] Repeat the steps from g but this time using the answers from h and i. Use the answer from h as the baseline value. Interpret the resulting value. 
+$\frac {(78/678) - (165/678)}{165/678}(100) = `r format ((((78/678)-(165/678)) * 100), scientific=FALSE)`$
+
+k. [*10 points*] Finally, provide some commentary based upon the preceding answers about whether there appears to be a relationship between county type and the violent crime rate (4-5 sentences should do). 
+
+When looking at the data calculated you can see the urban counties tend to have a higher proportion of high violent crime rates. WHile when it comes to low violent crime rate it seems to favor the rural counties. When calculating the high violent crime rate the percent difference was positive favoring that the urban was about 21% higher than the baseline. And while looking at the low violent crime rate it was actually negative meaning the urban area fell below the baseline by about 13%, which could make sense seeing as though they have a higher high violent crime rate.
