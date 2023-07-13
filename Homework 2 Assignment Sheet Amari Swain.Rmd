@@ -1,0 +1,226 @@
+---
+title: "Homework #2"
+author: "Amari Swain"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Instructions
+
+For this assignment you will be manually inputting data into R in the form of vectors, functions of vectors, and ultimately, a data frame. The data for the following questions come from the **2018_statedata** Excel file (posted on Canvas). Make sure that you do not simply import the data - you need to manually add each column of the data to R. This will involve the use of assignment operators and the concatenate function - c(). The assignment is worth a total of 101 points.  
+
+### Question #1
+
+**27 points**
+
+A. [*3 points*] Create a vector named *state* that contains all of the state names under the "state" column in the **2018_statedata** Excel file. Provide a summary of this vector and ensure that it has a length of 50. **HInt** - be sure to place quotation marks around each state name so that R recognizes it as a character vector. 
+```{r state, echo=TRUE}
+state <- c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisana", "Maine", "Maryland", 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming')
+length(state)
+X2018_statedata <- data.frame(state)
+#summary(state)
+```
+
+
+B. [*3 points*] Create a vector named *murder* that contains total counts of all murders reported to/discovered by the police in 2018 under the "murder" column in the **2018_statedata** Excel file. Provide a summary of this vector and ensure that it has a length of 50.
+
+```{r murder,echo=TRUE}
+murder <- c(383,47,369,216,1739,210,83,48,1107,642,36,35,884,438,54,113,244,530,24,490,136,551,106,171,607,34,44,202,21,286,167,562,628,18,564,206,82,784,16,392,12,498,1322,60,10,391,236,67,176,13)
+length(murder)
+
+X2018_statedata <- data.frame(state, murder)
+```
+
+C. [*3 points*] Create a vector named *rape* that contains total counts of all rapes reported to/discovered by the police in 2018 under the "rape" column in the **2018_statedata** Excel file. Provide a summary of this vector and ensure that it has a length of 50.
+
+```{r rape, echo=TRUE}
+rape <- c(1996,1192,3638,2196,15505,4070,840,338,8438,2651,625,791,5859,2370,976,1567,1707,2085,446,1979,2410,7690,2462,537,2912,551,1233,2329,534,1424,1354,6575,2633,397,5300,2299,1975,4483,481,2434,614,2821,14693,1753,287,2924,3413,652,2248,243)
+length(rape)
+
+X2018_statedata <- data.frame(state, murder, rape)
+```
+D. [*3 points*] Create a vector named *robbery* that contains total counts of all robberies reported to/discovered by the police in 2018 under the "robbery" column in the **2018_statedata** Excel file. Provide a summary of this vector and ensure that it has a length of 50.
+
+```{r robbery, echo=TRUE}
+robbery <- c(4076,896,6523,1594,54326,3797,2194,866,16884,8279,946,200,14208,5939,932,1543,2457,4568,228,9716,4143,5656,2944,1595,5197,269,756,3862,359,6364,2830,18187,8423,158,9185,2791,2549,9848,454,3553,262,7190,28256,1236,70,3604,5572,572,3489,100)
+length(robbery)
+
+X2018_statedata <- data.frame(state, murder, rape, robbery)
+```
+
+E. [*3 points*] Create a vector named *agg_assault* that contains total counts of all aggravated assaults reported to/discovered by the police in 2018 under the "agg_assault" column in the **2018_statedata** Excel file. Provide a summary of this vector and ensure that it has a length of 50.
+
+```{r agg_assault}
+agg_assault <- c(18944,4391,23528,12378,105412,14547,4294,2845,55551,22783,1925,2957,30539,16834,5931,9559,5059,17866,803,16135,16648,31021,6857,4696,22042,3120,3461,10027,1435,10463,13598,43171,27526,1560,17674,13084,7360,24077,1366,18446,2682,31717,73656,4319,710,10113,14251,3945,11263,870)
+length(agg_assault)
+
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault)
+```
+F. [*3 points*] Create a vector named *burglary* that contains total counts of all burglaries reported to/discovered by the police in 2018 under the "burglary" column in the **2018_statedata** Excel file. Provide a summary of this vector and ensure that it has a length of 50.
+
+```{r burglary}
+burglary <- c(28841,3979,31532,19193,164632,21371,7948,3158,71933,45369,5631,4940,39080,25268,11127,12537,17190,31132,2713,18892,13862,31651,16185,20839,27257,3257,5246,17743,1847,19232,16088,31137,62290,2724,48186,26858,16304,27104,2810,29473,2571,33132,117911,9968,1467,15574,40201,5354,14099,1525)
+length(burglary)
+
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary)
+```
+
+G. [*3 points*] Create a vector named *larceny* that contains total counts of all larcenies reported to/discovered by the police in 2018 under the "larceny" column in the **2018_statedata** Excel file. Provide a summary of this vector and ensure that it has a length of 50.
+
+```{r larceny}
+larceny <- c(95747,16364,141303,61487,621775,109119,44724,17847,372919,200609,29492,18732,187591,105242,37571,56305,60244,109993,14683,91835,66728,116178,85561,46627,115101,20465,30006,44338,14219,94887,45390,237233,179057,11008,186401,73217,88418,150596,13220,109616,11156,137708,491702,57460,6316,115533,154133,18954,67953,7949)
+length(larceny)
+
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny)
+```
+
+H. [*3 points*] Create a vector named *auto_theft* that contains total counts of all motor vehicle thefts reported to/discovered by the police in 2018 under the "auto_theft" column in the **2018_statedata** Excel file. Provide a summary of this vector and ensure that it has a length of 50.
+
+``` {r auto_theft}
+auto_theft <- c(13112,3996,19139,7113,155211,21673,7383,1476,41165,24760,5649,1964,19593,15328,4687,7844,10261,11536,777,12137,6606,17451,10128,4300,19815,2796,4874,11904,869,11037,10179,13137,17632,1775,19909,13289,16556,13116,1531,14332,1524,20439,69817,7728,253,10778,27677,2519,8634,839)
+length(auto_theft)
+
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft)
+```
+
+I. [*3 points*] Create a vector named *population* that contains state population counts under the "population" column in the **2018_statedata** Excel file. Provide a summary of this vector and ensure that it has a length of 50.
+``` {r population}
+population <- c(4887871,737438,7171646,3013825,39557045,5695564,3572665,967171,21299325,10519475,1420491,1754208,12741080,6691878,3156145,2911505,4468402,4659978,1338404,6042718,6902149,9995915,5611179,2986530,6126452,1062305,1929268,3034392,1356458,8308520,2095428,19542209,10383620,760077,11689442,3943079,4190713,12807060,1057315,5084127,882235,6770010,28701845,3161105,626299,8517685,7535591,1805832,5813568,577737)
+length(population)
+
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population)
+```
+
+\newpage
+
+### Question #2
+
+**20 points**
+
+A. [*14 points*] Using the values in the population vector and the crime count vectors, create rates per 100,000 for each of the index crime count vectors created above (you should create seven new crime rate vectors, one for each index crime above). Names for the new vectors should simply append "_rate" to the original vector names (e.g., *murder_rate* and so on). You will have to do some simple algebra here - remember that you can add, subtract, multiply, and divide column vectors so long as they are of equal length (or evenly divisible) and multiple mathematical operations can be conducted within a single R expression.
+
+```{r rates, echo=TRUE}
+murder_rate <- ((X2018_statedata$murder/X2018_statedata$population)*100000)
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate)
+
+rape_rate <- ((X2018_statedata$rape/X2018_statedata$population)*100000)
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate, rape_rate)
+
+robbery_rate <- ((X2018_statedata$robbery/X2018_statedata$population)*100000)
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate, rape_rate, robbery_rate)
+
+agg_assault_rate <- ((X2018_statedata$agg_assault/X2018_statedata$population)*100000)
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate, rape_rate, robbery_rate, agg_assault_rate)
+
+burglary_rate <- ((X2018_statedata$burglary/X2018_statedata$population)*100000)
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate, rape_rate, robbery_rate, agg_assault_rate, burglary_rate)
+
+larceny_rate <- ((X2018_statedata$larceny/X2018_statedata$population)*100000)
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate, rape_rate, robbery_rate, agg_assault_rate, burglary_rate, larceny_rate)
+
+auto_theft_rate <- ((X2018_statedata$auto_theft/X2018_statedata$population)*100000)
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate, rape_rate, robbery_rate, agg_assault_rate, burglary_rate, larceny_rate, auto_theft_rate)
+```
+
+B. [*3 points*] Create a violent crime rate per 100,000 called **viol_rate** that is the rate of violent crimes reported to/discovered by the police (including murder, rape, robbery, and aggravated assault) per 100,000 people in the population. 
+
+``` {r viol_rate}
+viol_rate <- (((X2018_statedata$murder + X2018_statedata$rape + X2018_statedata$robbery + X2018_statedata$agg_assault)/X2018_statedata$population)*100000)
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate, rape_rate, robbery_rate, agg_assault_rate, burglary_rate, larceny_rate, auto_theft_rate, viol_rate)
+```
+
+C. [*3 points*] Create a property crime rate per 100,000 called **prop_rate** that is the rate of property crimes reported to/discovered by the police (including burglary, larceny, and auto theft) per 100,000 people in the population.
+
+``` {r prop_rate}
+prop_rate <- (((X2018_statedata$burglary + X2018_statedata$larceny + X2018_statedata$auto_theft)/ X2018_statedata$population)*100000)
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate, rape_rate, robbery_rate, agg_assault_rate, burglary_rate, larceny_rate, auto_theft_rate, viol_rate, prop_rate)
+```
+
+### Question #3
+
+**16 points**
+
+A. [*10 points*] Create a data frame called **state_data** which includes the vectors you created for both of the prior questions. Provide a summary of this data frame using the summary() function. 
+
+```{r state_data, echo=TRUE}
+state_data <- X2018_statedata
+summary(state_data)
+```
+
+B. [*6 points*] Within this new data frame, create a total crime rate per 100,000 called **total_rate** that is the rate of all crimes reported to/discovered by the police per 100,000 people in the population.
+
+```{r total_rate, echo=TRUE}
+total_rate <- (((X2018_statedata$murder + X2018_statedata$rape + X2018_statedata$robbery + X2018_statedata$agg_assault + X2018_statedata$burglary + X2018_statedata$larceny + X2018_statedata$auto_theft)/X2018_statedata$population)*100000)
+
+X2018_statedata <- data.frame(state, murder, rape, robbery, agg_assault, burglary, larceny, auto_theft, population, murder_rate, rape_rate, robbery_rate, agg_assault_rate, burglary_rate, larceny_rate, auto_theft_rate, viol_rate, prop_rate, total_rate)
+state_data <- X2018_statedata
+```
+
+### Question #4
+
+**24 points** 
+
+The following questions will ask you to use several new functions or familiar functions in new ways. As an example, I could have asked you to compute a variable equal to 1 if a state's murder rate is above the national average and 0 otherwise. The code I would use to do that is the following: 
+
+> state_data$murder_abvavg <- with(state_data, ifelse(murder>mean(murder),1,0))
+
+where the left-hand side of the assignment operator creates a new variable, **murder_abvavg**, the **with()** function specifies the data frame to be used for some operation, the **ifelse()** command presents a test of the data and two values - 1 if the test comes back true and 0 if it is false, and the **mean()*** function which returns the mean of some set of values or a vector. *Side note* a variable equal to 1 if some condition is true and 0 otherwise has a few different names - I will often refer to them as **dummy variables**. *Yet another side note* - the mean of a dummy variable represents the proportion of observations that have values equal to 1 (multiply that by 100 to get a percentage). 
+
+A. [*8 points*] Within the **state_data** data frame, create a variable called "viol_abvavg" that is equal to 1 if the violent crime rate is above the national average (i.e., the mean of the violent crime rate) and 0 otherwise. 
+
+```{r viol_abv, echo=TRUE}
+state_data$viol_abvavg <- with(state_data, ifelse(viol_rate>mean(viol_rate),1,0))
+summary(state_data$viol_abvavg)
+```
+
+B. [*8 points*] Within the **state_data** data frame, create a variable called "prop_abvavg" that is equal to 1 if the property crime rate is above the national average (i.e., the mean of the property crime rate) and 0 otherwise. 
+
+``` {r prop_abv, echo=TRUE}
+state_data$prop_abvavg <- with(state_data, ifelse(prop_rate>mean(prop_rate),1,0))
+summary(state_data$prop_abvavg)
+```
+
+C. [*8 points*] Within the **state_data** data frame, create a variable called "total_abvavg" that is equal to 1 if the total crime rate is above the national average (i.e., the mean of the total crime rate) and 0 otherwise.
+
+```{r total_abv, echo=TRUE}
+state_data$total_abvavg <- with(state_data, ifelse(total_rate>mean(total_rate),1,0))
+summary(state_data$total_abvavg)
+```
+
+\newpage
+
+### Question #5
+
+**14 points**
+
+This question will task you with creating simple frequency tables and interpreting their contents. You will need to use the **table()** function to answer these questions and please remember that the syntax reads the first variable listed as the rows and the second variable listed as the columns. 
+
+A. [*7 points*] Create a table with **viol_abvavg** as the row variable and **total_abvavg** as the column variable. Be sure to display the contents of this table. 
+
+``` {r table_viol_total, echo=TRUE}
+with(state_data, table(viol_abvavg, total_abvavg))
+
+```
+
+B. [*7 points*] Create a table with **prop_abvavg** as the row variable and **total_abvavg** as the column variable. Be sure to display the contents of this table.
+
+```{r table_prop_total, echo=TRUE}
+with(state_data, table(prop_abvavg, total_abvavg))
+
+```
+
+\newpage
+
+**Extra Credit - 10 points**
+
+Is the following statement true or false? How can you tell?
+
+"If a state is above average on the violent crime rate they are more likely than not to be above average on the total crime rate." 
+
+Be sure to explain your answer! No credit will be provided for simple True or False answers. 
+
+Answer: I think this statement is true because when looking at the table created in question 5 part one it resembles that. When the violent crime is above average but the total crime isn't, the number of states is only 5. Where as if they are both above average that number now becomes 19 states. So id say that this is an indicator that when violent crime is above average so is total crime.
+
